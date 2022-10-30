@@ -26,7 +26,24 @@ public final class QOIEncoder {
      * @return (byte[]) - Corresponding "Quite Ok Image" Header
      */
     public static byte[] qoiHeader(Helper.Image image){
-        return Helper.fail("Not Implemented");
+
+        assert image!=null;
+        assert image.channels()==QOISpecification.RGB || image.channels()==QOISpecification.RGBA;
+        assert image.color_space()==QOISpecification.sRGB || image.color_space()==QOISpecification.ALL;
+
+
+        byte[] width = ArrayUtils.fromInt(image.data()[0].length);
+        byte[] height = ArrayUtils.fromInt(image.data().length);
+
+        byte[] result = new byte[QOISpecification.HEADER_SIZE];
+
+        for (int i = 0; i < 4; i++)  result[i] = QOISpecification.QOI_MAGIC[i];
+        for (int i = 4; i < 8; i++)  result[i] = width[i-4];
+        for (int i = 8; i < 12; i++)  result[i] = height[i-8];
+        result[12] = image.channels();
+        result[13] = image.color_space();
+
+        return result;
     }
 
     // ==================================================================================
@@ -40,7 +57,15 @@ public final class QOIEncoder {
      * @return (byte[]) - Encoding of the pixel using the QOI_OP_RGB schema
      */
     public static byte[] qoiOpRGB(byte[] pixel){
-        return Helper.fail("Not Implemented");
+
+        assert pixel.length==4;
+
+        byte[] result = new byte[4];
+
+        result[0] = QOISpecification.QOI_OP_RGB_TAG;
+        for (int i = 0; i < 3; i++)  result[i+1] = pixel[i];
+
+        return result;
     }
 
     /**
@@ -50,7 +75,15 @@ public final class QOIEncoder {
      * @return (byte[]) Encoding of the pixel using the QOI_OP_RGBA schema
      */
     public static byte[] qoiOpRGBA(byte[] pixel){
-        return Helper.fail("Not Implemented");
+
+        assert pixel.length==4;
+
+        byte[] result = new byte[5];
+
+        result[0] = QOISpecification.QOI_OP_RGBA_TAG;
+        for (int i = 0; i < 4; i++) result[i+1] = pixel[i];
+
+        return result;
     }
 
     /**
@@ -60,7 +93,8 @@ public final class QOIEncoder {
      * @return (byte[]) - Encoding of the index using the QOI_OP_INDEX schema
      */
     public static byte[] qoiOpIndex(byte index){
-        return Helper.fail("Not Implemented");
+        assert index >= 0 && index <= 63;
+        return ArrayUtils.wrap(index);
     }
 
     /**
@@ -71,8 +105,20 @@ public final class QOIEncoder {
      * @return (byte[]) - Encoding of the given difference
      */
     public static byte[] qoiOpDiff(byte[] diff){
-        return Helper.fail("Not Implemented");
-    }
+        assert diff!=null;
+        assert diff.length==3;
+        for ( byte di:diff) assert di<=1 && di>=-2;
+
+
+        byte result=QOISpecification.QOI_OP_DIFF_TAG;
+        for(int i=diff.length-1; i>=0; i--){
+            byte x= (byte)((diff[2-i]+2)<<2*i);
+            result= (byte) (result | x) ;
+        }
+
+
+        return ArrayUtils.wrap(result);
+    }//MAKE IT BETTER
 
     /**
      * Encode the difference between 2 pixels using the QOI_OP_LUMA schema
@@ -83,7 +129,16 @@ public final class QOIEncoder {
      * @return (byte[]) - Encoding of the given difference
      */
     public static byte[] qoiOpLuma(byte[] diff){
-        return Helper.fail("Not Implemented");
+        assert diff!=null;
+        assert diff.length==3;
+        assert diff[1]>-33 && diff[1]<32 ;
+        for(int i=0;i<diff.length;i+=2)assert diff[i]-diff[1]>-9 && diff[i]-diff[1]<8 ;
+
+        byte[] result=new byte[2];
+        result[0]=(byte)(QOISpecification.QOI_OP_LUMA_TAG + (32+diff[1]));
+        result[1]=(byte)(((diff[0]-diff[1]+8)<<4) + diff[2]-diff[1]+8);
+
+        return result;
     }
 
     /**
@@ -93,7 +148,10 @@ public final class QOIEncoder {
      * @return (byte[]) - Encoding of count
      */
     public static byte[] qoiOpRun(byte count){
-        return Helper.fail("Not Implemented");
+        assert count>=1 && count<=62;
+        byte result =(byte)(QOISpecification.QOI_OP_RUN_TAG+(count-1));
+
+        return ArrayUtils.wrap(result);
     }
 
     // ==================================================================================
@@ -107,7 +165,22 @@ public final class QOIEncoder {
      * @return (byte[]) - "Quite Ok Image" representation of the image
      */
     public static byte[] encodeData(byte[][] image){
-        return Helper.fail("Not Implemented");
+        assert image!=null;
+        for(byte[] im: image) assert  im !=null && im.length==4;
+
+        byte[] prvPix= QOISpecification.START_PIXEL;
+        byte[][] hashTab=new byte[64][4];
+        int counter=0;
+
+        for(int i=0;i< image.length;i++){
+            if (ArrayUtils.equals(image[i],prvPix)) {
+
+                counter ++
+            }
+
+
+        }
+
     }
 
     /**

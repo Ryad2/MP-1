@@ -42,25 +42,25 @@ public final class Main {
          */
 
         // ========== Test ArrayUtils ==========
-        assert testWrap();
-        assert testToInt();
-        assert testFromInt();
-        assert testConcatBytes();
-        assert testConcatArrayBytes();  //DEMANDER AU ASSISTANT
-        assert testExtract();
-        assert testPartition();
-        testImageToChannels();
+        //assert testWrap();
+        //assert testToInt();
+        //assert testFromInt();
+        //assert testConcatBytes();
+        //assert testConcatArrayBytes();
+        //assert testExtract();
+        //assert testPartition();
+        //assert testImageToChannels();
         //assert testChannelsToImage();
 
         // ========== Test QOIEncoder ==========
-        //assert testQoiHeader();
-        //assert testQoiOpRGB();
-        //assert testQoiOpRGBA();
-        //assert testQoiOpIndex();
-        //assert testQoiOpDiff();
-        //assert testQoiOpLuma();
-        //assert testQoiOpRun();
-        //assert testEncodeData();
+        assert testQoiHeader();
+        assert testQoiOpRGB();
+        assert testQoiOpRGBA();
+        assert testQoiOpIndex();
+        assert testQoiOpDiff();
+        assert testQoiOpLuma();
+        assert testQoiOpRun();
+        assert testEncodeData();
 
         // ========== Test QOIDecoder ==========
         //assert testDecodeHeader();
@@ -195,16 +195,9 @@ public final class Main {
 
 
     @SuppressWarnings("unused")
-    private static void testImageToChannels(){
+    private static boolean testImageToChannels(){
         byte[][] output = ArrayUtils.imageToChannels(input);
-        System.out.println(output[0][0]);
-        System.out.println(output[0][1]);
-        System.out.println(output[1][0]);
-        System.out.println(output[1][1]);
-        System.out.println(output[2][0]);
-        System.out.println(output[2][1]);
-
-        //return Arrays.deepEquals(output, formattedInput);
+        return Arrays.deepEquals(output, formattedInput);
     }
 
     @SuppressWarnings("unused")
