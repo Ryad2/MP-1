@@ -251,35 +251,6 @@ public final class QOIEncoder {
         return result;
 
 
-        /*
-        create function run_encoding
-
-        create function index_encoding
-
-        create function diff_encoding
-
-        create function ...*/
-
-        /*for (byte[] pixel : image)
-        {
-            if (run_encoding()){
-
-            }
-            else if (index_encoding()){
-
-            }
-            else if (diff_encoding()){
-
-            }
-            else if (...)
-            {
-
-            }
-        }*/
-
-
-
-    }
     public static boolean diff (byte[] fst, byte[] sec){
         for ( int i=0; i<fst.length; i++) {
             if((fst[i]-sec[i])) return false;
@@ -292,6 +263,8 @@ public final class QOIEncoder {
         return true;}
         else return false;
     }
+
+
     /**
      * Creates the representation in memory of the "Quite Ok Image" file.
      * @apiNote THE FILE IS NOT CREATED YET, THIS IS JUST ITS REPRESENTATION.
@@ -301,7 +274,9 @@ public final class QOIEncoder {
      * @throws AssertionError if the image is null
      */
     public static byte[] qoiFile(Helper.Image image){
-        return Helper.fail("Not Implemented");
+        assert image!=null;
+
+        //return Helper.fail("Not Implemented");
     }
 
 }
