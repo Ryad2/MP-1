@@ -177,21 +177,29 @@ public final class QOIEncoder {
 
         for(int i=0;i< image.length;i++){
 
-            // run block
+            // QOI_OP_RUN Block step1
+
             if (ArrayUtils.equals(image[i],previousPixel)) {
                 counter++;
+                if(counter==62 || i== image.length-1){
+                    encodedData.add(qoiOpRun((byte)counter));
+                    counter=0;
+                }
                 continue;
             }
-            else if (counter != 0){
-                int blocks = counter/62;
-                for (int j = 0; j < blocks; j++)  encodedData.add(qoiOpRun((byte)62));
-                encodedData.add(qoiOpRun((byte)(counter % 62)));
+            if (counter != 0){
+                encodedData.add(qoiOpRun((byte)counter));
                 counter = 0;
             }
 
-            // index block
+
+
+
+
+
+            // QOI_OP_INDEX Block step2
             byte hash = QOISpecification.hash(image[i]);
-            if (hashTab[hash] != null){
+            if (!ArrayUtils.equals(hashTab[hash],image[i])){
                 encodedData.add(qoiOpIndex(hash));
                 continue;
             }
@@ -199,11 +207,48 @@ public final class QOIEncoder {
                 hashTab[hash] = image[i];
             }
 
+
+
+            //QOI_OP_DIFF Block step3
+            if(image[i][3]==previousPixel[3] && diff(image[i],previousPixel )){//LOOK HOW TO CODE THE FONCTION diff
+                byte[] difference=new byte[3];
+                for(int j=0; j<difference.length; j++) difference[j]=(byte) (image[i][j]-previousPixel[j]);//SEE HOW TO CALCULATE DIFFRENCE ????
+                encodedData.add(qoiOpDiff(difference));
+
+                continue;
+            }
+
+
+            //QOI_OP_LUMA Block step 4
+            if(image[i][3]==previousPixel[3] && luma(image[i],previousPixel)){
+                byte[]luma;
+                encodedData.add(qoiOpLuma(luma));
+                continue;
+            }
+
+            //QOI_OP_RGB Block step 5
+
+            if(image[i][3]==previousPixel[3]){
+                encodedData.add(qoiOpRGB(image[i]));
+                continue;
+            }
+
+            encodedData.add(qoiOpRGBA(image[i]));
+
             previousPixel = image[i];
         }
 
-        // will be replaced at the end
-        return null;
+
+
+
+        byte[] result =new byte[encodedData.size()];
+        int i=0;
+        for (byte[]data:encodedData){
+            result[i]=ArrayUtils.concat(data);
+            i++;
+        }
+
+        return result;
 
 
         /*
@@ -235,7 +280,18 @@ public final class QOIEncoder {
 
 
     }
+    public static boolean diff (byte[] fst, byte[] sec){
+        for ( int i=0; i<fst.length; i++) {
+            if((fst[i]-sec[i])) return false;
+        }
+        return true;
+    }
 
+    public static boolean luma (byte[] fst, byte[] sec){
+        if(){
+        return true;}
+        else return false;
+    }
     /**
      * Creates the representation in memory of the "Quite Ok Image" file.
      * @apiNote THE FILE IS NOT CREATED YET, THIS IS JUST ITS REPRESENTATION.
