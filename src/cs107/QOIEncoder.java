@@ -1,5 +1,7 @@
 package cs107;
 
+import java.util.ArrayList;
+
 /**
  * "Quite Ok Image" Encoder
  * @apiNote Second task of the 2022 Mini Project
@@ -168,19 +170,47 @@ public final class QOIEncoder {
         assert image!=null;
         for(byte[] im: image) assert  im !=null && im.length==4;
 
-        byte[] prvPix= QOISpecification.START_PIXEL;
-        byte[][] hashTab=new byte[64][4];
-        int counter=0;
+        byte[] previousPixel = QOISpecification.START_PIXEL;
+        byte[][] hashTab = new byte[64][4];
+        byte counter = 0;
+        ArrayList<byte[]> encodedData = new ArrayList<>();
 
         for(int i=0;i< image.length;i++){
-            if (ArrayUtils.equals(image[i],prvPix)) {
 
-                counter ++
+            // run block
+            if (ArrayUtils.equals(image[i],previousPixel)) {
+                counter++;
+                continue;
+            }
+            else if (counter != 0){
+                int blocks = counter/62;
+                for (int j = 0; j < blocks; j++)  encodedData.add(qoiOpRun((byte)62));
+                encodedData.add(qoiOpRun((byte)(counter % 62)));
+                counter = 0;
             }
 
+            // index block
+            byte hash = QOISpecification.hash(image[i]);
+            if (hashTab[hash] != null){
+                encodedData.add(qoiOpIndex(hash));
+                continue;
+            }
+            else {
+                hashTab[hash] = image[i];
+            }
 
+            previousPixel = image[i];
         }
 
+        // will be replaced at the end
+        return null;
+
+
+        /*
+        function
+
+
+         */
     }
 
     /**
