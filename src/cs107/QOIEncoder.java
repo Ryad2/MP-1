@@ -207,10 +207,33 @@ public final class QOIEncoder {
 
 
         /*
-        function
+        create function run_encoding
+
+        create function index_encoding
+
+        create function diff_encoding
+
+        create function ...*/
+
+        /*for (byte[] pixel : image)
+        {
+            if (run_encoding()){
+
+            }
+            else if (index_encoding()){
+
+            }
+            else if (diff_encoding()){
+
+            }
+            else if (...)
+            {
+
+            }
+        }*/
 
 
-         */
+
     }
 
     /**
