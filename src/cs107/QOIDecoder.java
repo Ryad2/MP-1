@@ -33,11 +33,16 @@ public final class QOIDecoder {
         for (int i = 0; i < 4; i++) assert header[i] == QOISpecification.QOI_MAGIC[i];
 
         assert header[12] == QOISpecification.RGB || header[12] == QOISpecification.RGBA;
-        //assert header[]
+        assert header[13] == QOISpecification.ALL || header[13] == QOISpecification.sRGB;
 
+        int[] result = new int[4];
 
+        result[0] = ArrayUtils.toInt(ArrayUtils.extract(header, 4, 4));
+        result[1] = ArrayUtils.toInt(ArrayUtils.extract(header, 8, 4));
+        result[2] = header[12];
+        result[3] = header[13];
 
-        return Helper.fail("Not Implemented");
+        return result;
     }
 
     // ==================================================================================
@@ -54,8 +59,18 @@ public final class QOIDecoder {
      * @return (int) - The number of consumed bytes
      * @throws AssertionError See handouts section 6.2.1
      */
-    public static int decodeQoiOpRGB(byte[][] buffer, byte[] input, byte alpha, int position, int idx){
-        return Helper.fail("Not Implemented");
+    public static int decodeQoiOpRGB(byte[][] buffer, byte[] input, byte alpha, int position, int idx){ // idx non comprise ???
+        assert buffer != null && input != null;                                                         // also ask about return
+        assert position >= 0 && position < buffer.length;
+        assert idx >= 0 && idx < input.length;  // ask about this
+
+        assert input.length - idx >= 4;
+
+        for (int i = 0; i < 3; i++) buffer[position][i] = input[idx + i];
+        buffer[position][3] = alpha;
+
+        // why 3? should there be a calculation
+        return 3;
     }
 
     /**
@@ -68,7 +83,15 @@ public final class QOIDecoder {
      * @throws AssertionError See handouts section 6.2.2
      */
     public static int decodeQoiOpRGBA(byte[][] buffer, byte[] input, int position, int idx){
-        return Helper.fail("Not Implemented");
+        assert buffer != null && input != null;                                                         // also ask about return
+        assert position >= 0 && position < buffer.length;
+        assert idx >= 0 && idx < input.length;  // ask about this
+
+        assert input.length - idx >= 5;
+
+        for (int i = 0; i < 4; i++) buffer[position][i] = input[idx + i];
+
+        return 4;
     }
 
     /**
@@ -79,7 +102,14 @@ public final class QOIDecoder {
      * @throws AssertionError See handouts section 6.2.4
      */
     public static byte[] decodeQoiOpDiff(byte[] previousPixel, byte chunk){
-        return Helper.fail("Not Implemented");
+        byte[] result = new byte[4];
+
+        for (int i = 0; i < 3; i++) {
+           result[i] = (byte)(previousPixel[i]+(((0b00_00_00_11<<2*(2-i) & chunk)>>2*(2-i)))-2);
+        }
+        result[3] = previousPixel[3];
+
+        return result;
     }
 
     /**
@@ -90,6 +120,15 @@ public final class QOIDecoder {
      * @throws AssertionError See handouts section 6.2.5
      */
     public static byte[] decodeQoiOpLuma(byte[] previousPixel, byte[] data){
+        assert previousPixel != null && data != null;
+        assert previousPixel.length == 4;
+        assert (data[0] & QOISpecification.QOI_OP_LUMA_TAG) == QOISpecification.QOI_OP_LUMA_TAG;
+
+        byte[] result = new byte[4];
+
+        //result[1] = (byte)(previousPixel[0]+(0b00_00_00_11>>2 & chunk));
+
+
         return Helper.fail("Not Implemented");
     }
 
