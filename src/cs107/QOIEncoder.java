@@ -185,6 +185,7 @@ public final class QOIEncoder {
                     encodedData.add(qoiOpRun(counter));
                     counter = 0;
                 }
+                previousPixel = image[i];
                 continue;
             }
             if (counter != 0) {
@@ -196,10 +197,11 @@ public final class QOIEncoder {
             // QOI_OP_INDEX Block step2
             byte hash = QOISpecification.hash(image[i]);
             if (!ArrayUtils.equals(hashTab[hash], image[i])) {              // do we need the ArrayUtils.equals here?
-                encodedData.add(qoiOpIndex(hash));
-                continue;
-            } else {
                 hashTab[hash] = image[i];
+            } else {
+                encodedData.add(qoiOpIndex(hash));
+                previousPixel = image[i];
+                continue;
             }
 
 
@@ -209,7 +211,7 @@ public final class QOIEncoder {
                 for (int j = 0; j < difference.length; j++)
                     difference[j] = (byte) (image[i][j] - previousPixel[j]);//SEE HOW TO CALCULATE DIFFRENCE ????
                 encodedData.add(qoiOpDiff(difference));
-
+                previousPixel = image[i];
                 continue;
             }
 
@@ -217,6 +219,7 @@ public final class QOIEncoder {
             //QOI_OP_LUMA Block step 4
             if (image[i][3] == previousPixel[3] && luma(image[i], previousPixel)) {
                 encodedData.add(qoiOpLuma(getLumaDiff(image[i], previousPixel)));
+                previousPixel = image[i];
                 continue;
             }
 
@@ -224,6 +227,7 @@ public final class QOIEncoder {
 
             if (image[i][3] == previousPixel[3]) {
                 encodedData.add(qoiOpRGB(image[i]));
+                previousPixel = image[i];
                 continue;
             }
 
@@ -231,7 +235,6 @@ public final class QOIEncoder {
 
             previousPixel = image[i];
         }
-
 
         byte[][] result = new byte[encodedData.size()][];
         int i = 0;
@@ -245,7 +248,7 @@ public final class QOIEncoder {
 
     // if thr difference is small enough to use the diff function
     public static boolean diff (byte[] current, byte[] previous){
-        for (int i = 0; i < current.length; i++) {
+        for (int i = 0; i < current.length-1; i++) {
             if (current[i] - previous[i] > 1 || current[i] - previous[i] < -2) return false;
         }
         return true;
@@ -254,19 +257,19 @@ public final class QOIEncoder {
     public static boolean luma (byte[] current, byte[] previous){
         byte[] diff = getLumaDiff(current, previous);
 
-        if (diff[0] >= 32 || diff[0] <= -32) return false;
-        if (diff[1] >= 8 || diff[1] <= -9) return false;
-        if (diff[2] >= 8 || diff[2] <= -9) return false;
+        if (diff[1] >= 32 || diff[1] <= -32) return false;
+        if (diff[0] - diff[1] >= 8 || diff[0] - diff[1] <= -9) return false;
+        if (diff[2] - diff[1] >= 8 || diff[2] - diff[1] <= -9) return false;
 
         return true;
     }
 
     public static byte[] getLumaDiff(byte[] current, byte[] previous) {
-        byte green_diff = (byte)(current[2] - previous[2]);
-        byte red_green_diff = (byte)(current[1] - previous[1] - green_diff);
-        byte blue_green_diff = (byte)(current[3] - previous[3] - green_diff);
+        byte green_diff = (byte)(current[1] - previous[1]);
+        byte red_green_diff = (byte)(current[0] - previous[0]);
+        byte blue_green_diff = (byte)(current[2] - previous[2]);
 
-        return new byte[] {green_diff, red_green_diff, blue_green_diff};
+        return new byte[] {red_green_diff, green_diff, blue_green_diff};
     }
 
     /**

@@ -53,20 +53,20 @@ public final class Main {
         //assert testChannelsToImage();
 
         // ========== Test QOIEncoder ==========
-        assert testQoiHeader();
-        assert testQoiOpRGB();
-        assert testQoiOpRGBA();
-        assert testQoiOpIndex();
-        assert testQoiOpDiff();
-        assert testQoiOpLuma();
-        assert testQoiOpRun();
-        assert testEncodeData();
+        //assert testQoiHeader();
+        //assert testQoiOpRGB();
+        //assert testQoiOpRGBA();
+        //assert testQoiOpIndex();
+        //assert testQoiOpDiff();
+        //assert testQoiOpLuma();
+        //assert testQoiOpRun();
+        //assert testEncodeData();
 
         // ========== Test QOIDecoder ==========
-        //assert testDecodeHeader();
-        //assert testDecodeQoiOpRGB();
-        //assert testDecodeQoiOpRGBA();
-        //assert testDecodeQoiOpDiff();
+        assert testDecodeHeader();
+        assert testDecodeQoiOpRGB();
+        assert testDecodeQoiOpRGBA();
+        assert testDecodeQoiOpDiff();
         //assert testDecodeQoiOpLuma();
         //assert testDecodeQoiOpRun();
         //assert testDecodeData();
