@@ -27,6 +27,16 @@ public final class QOIDecoder {
      * @throws AssertionError See handouts section 6.1
      */
     public static int[] decodeHeader(byte[] header){
+        assert header != null;
+        assert header.length == QOISpecification.HEADER_SIZE;
+
+        for (int i = 0; i < 4; i++) assert header[i] == QOISpecification.QOI_MAGIC[i];
+
+        assert header[12] == QOISpecification.RGB || header[12] == QOISpecification.RGBA;
+        //assert header[]
+
+
+
         return Helper.fail("Not Implemented");
     }
 

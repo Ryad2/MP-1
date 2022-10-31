@@ -135,7 +135,7 @@ public final class ArrayUtils {
      * @return (byte[]) - Array representation of the sequence
      * @throws AssertionError if the input is null
      */
-    public static byte concat(byte... bytes) {
+    public static byte[] concat(byte... bytes) {
         assert bytes!= null;
 
         byte[] result = new byte[bytes.length];
@@ -144,7 +144,6 @@ public final class ArrayUtils {
             result[i] = bytes[i];
         }
         return result;
-
     }
 
     /**
