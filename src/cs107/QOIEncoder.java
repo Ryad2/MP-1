@@ -263,7 +263,7 @@ public final class QOIEncoder {
         return true;}
         else return false;
     }
-
+//je m'apppelle l'ovni
 
     /**
      * Creates the representation in memory of the "Quite Ok Image" file.
