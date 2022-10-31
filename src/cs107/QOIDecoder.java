@@ -104,6 +104,17 @@ public final class QOIDecoder {
     public static byte[] decodeQoiOpDiff(byte[] previousPixel, byte chunk){
         byte[] result = new byte[4];
 
+
+        /*byte selector = 0b00_11_00_00;
+        for (int i = 0; i < 3; i++) {
+            int offset = 4-i*2;
+            result[i] = (byte)(((selector & chunk)>>offset) + previousPixel[i] - 2);
+            selector = (byte)(selector >> 2);
+        }
+        result[3] = previousPixel[3];*/
+
+
+
         for (int i = 0; i < 3; i++) {
            result[i] = (byte)(previousPixel[i]+(((0b00_00_00_11<<2*(2-i) & chunk)>>2*(2-i)))-2);
         }
