@@ -283,4 +283,6 @@ public final class QOIEncoder {
         return Helper.fail("Not Implemented");
     }
 
+
+    // DONE GOD DAMMIT
 }
