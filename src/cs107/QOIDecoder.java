@@ -221,12 +221,12 @@ public final class QOIDecoder {
 
             // RGBA
             if (chunk == QOISpecification.QOI_OP_RGBA_TAG){
-                index += decodeQoiOpRGBA(buffer, data, position, index);
+                index += decodeQoiOpRGBA(buffer, data, position, index+2);
             }
 
             // RGB
             else if (chunk == QOISpecification.QOI_OP_RGB_TAG){
-                index += decodeQoiOpRGB(buffer, data, previousPixel[3], position, index);
+                index += decodeQoiOpRGB(buffer, data, previousPixel[3], position, index+1);
             }
 
             // RUN
