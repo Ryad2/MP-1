@@ -197,6 +197,7 @@ public final class QOIEncoder {
             // QOI_OP_INDEX Block step2
             byte hash = QOISpecification.hash(image[i]);
             if (!ArrayUtils.equals(hashTab[hash], image[i])) {              // do we need the ArrayUtils.equals here?
+                System.out.println("index");
                 hashTab[hash] = image[i];
             } else {
                 encodedData.add(qoiOpIndex(hash));
