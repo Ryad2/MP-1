@@ -269,6 +269,8 @@ public final class Main {
     @SuppressWarnings("unused")
     private static boolean testEncodeData(){
         byte[][]  pixels = { {0,0,0,-1}, {0,0,0,-1}, {0,0,0,-1}, {0,-1,0,-1},{-18,-20,-18,-1},{0,0,0,-1}, {100,100,100,-1}, {90,90,90,90}};
+        // this line is data, that requires the use of index encoding
+        // byte[][] pixels = { {0,0,0,-1}, {0,0,0,-1}, {0,0,0,-1}, {0,-1,0,-1},{-18,-20,-18,-1},{0,0,0,-1}, {100,100,100,-1}, {90,90,90,90}, {0,0,0,-1}};
         byte[] expected = {-62, 102, -115, -103, -76, 102, -2, 100, 100, 100, -1, 90, 90, 90, 90};
         byte[] encoding = QOIEncoder.encodeData(pixels);
         return Arrays.equals(expected, encoding);

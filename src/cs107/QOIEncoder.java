@@ -197,7 +197,6 @@ public final class QOIEncoder {
             // QOI_OP_INDEX Block step2
             byte hash = QOISpecification.hash(image[i]);
             if (!ArrayUtils.equals(hashTab[hash], image[i])) {              // do we need the ArrayUtils.equals here?
-                System.out.println("index");
                 hashTab[hash] = image[i];
             } else {
                 encodedData.add(qoiOpIndex(hash));
@@ -207,10 +206,10 @@ public final class QOIEncoder {
 
 
             //QOI_OP_DIFF Block step3
-            if (image[i][3] == previousPixel[3] && diff(image[i], previousPixel)) {//LOOK HOW TO CODE THE FONCTION diff
+            if (image[i][3] == previousPixel[3] && diff(image[i], previousPixel)) {//LOOK HOW TO CODE THE FUNCTION diff
                 byte[] difference = new byte[3];
                 for (int j = 0; j < difference.length; j++)
-                    difference[j] = (byte) (image[i][j] - previousPixel[j]);//SEE HOW TO CALCULATE DIFFRENCE ????
+                    difference[j] = (byte) (image[i][j] - previousPixel[j]);//SEE HOW TO CALCULATE DIFFERENCE ????
                 encodedData.add(qoiOpDiff(difference));
                 previousPixel = image[i];
                 continue;
@@ -225,7 +224,6 @@ public final class QOIEncoder {
             }
 
             //QOI_OP_RGB Block step 5
-
             if (image[i][3] == previousPixel[3]) {
                 encodedData.add(qoiOpRGB(image[i]));
                 previousPixel = image[i];

@@ -63,7 +63,7 @@ public final class QOIDecoder {
      * @return (int) - The number of consumed bytes
      * @throws AssertionError See handouts section 6.2.1
      */
-    public static int decodeQoiOpRGB(byte[][] buffer, byte[] input, byte alpha, int position, int idx) { // idx non comprise ???
+    public static int  decodeQoiOpRGB(byte[][] buffer, byte[] input, byte alpha, int position, int idx) { // idx non comprise ???
         assert buffer != null && input != null;                                                         // also ask about return
         assert position >= 0 && position < buffer.length;
         assert idx >= 0 && idx < input.length;  // ask about this
@@ -111,19 +111,22 @@ public final class QOIDecoder {
         byte[] result = new byte[4];
 
 
-        /*byte selector = 0b00_11_00_00;
+        // version 2
+        byte selector = 0b00_11_00_00;
         for (int i = 0; i < 3; i++) {
             int offset = 4-i*2;
             result[i] = (byte)(((selector & chunk)>>offset) + previousPixel[i] - 2);
             selector = (byte)(selector >> 2);
         }
-        result[3] = previousPixel[3];*/
+        result[3] = previousPixel[3];
 
 
-        for (int i = 0; i < 3; i++) {
+        // version 1
+
+        /*for (int i = 0; i < 3; i++) {
             result[i] = (byte) (previousPixel[i] + (((0b00_00_00_11 << 2 * (2 - i) & chunk) >> 2 * (2 - i))) - 2);
         }
-        result[3] = previousPixel[3];
+        result[3] = previousPixel[3];*/
 
         return result;
     }
@@ -198,22 +201,82 @@ public final class QOIDecoder {
         assert data.length > width * height;//NOT CORRECT
 
         byte[] previousPixel = QOISpecification.START_PIXEL;
-        byte[][] hashTab = new byte[64][4];
-        byte counter = 0;
+        byte[][] hashTable = new byte[64][4];
+        //byte counter = 0;
         byte[][] buffer = new byte[width * height][4];
-        int[] index_tab = new int[64];
+        //int[] index_tab = new int[64];
+
+        //int position = 0;
+        int position = -1;
+
+        // ==================================================================================
+        // =============================== DECODING V.2 =====================================
+        // ==================================================================================
+
+        int index = 0;
+        while (index < data.length)
+        {
+            position++;
+            byte chunk = data[index];
+
+            // RGBA
+            if (chunk == QOISpecification.QOI_OP_RGBA_TAG){
+                index += decodeQoiOpRGBA(buffer, data, position, index);
+            }
+
+            // RGB
+            else if (chunk == QOISpecification.QOI_OP_RGB_TAG){
+                index += decodeQoiOpRGB(buffer, data, previousPixel[3], position, index);
+            }
+
+            // RUN
+            else if (compareTag(chunk, QOISpecification.QOI_OP_RUN_TAG)){
+                position += decodeQoiOpRun(buffer, previousPixel, chunk, position);
+                index++;
+            }
+
+            // INDEX
+            else if (compareTag(chunk, QOISpecification.QOI_OP_INDEX_TAG)){
+                index += decodeIndex(buffer, hashTable, chunk, position);
+            }
+
+            // DIFF
+            else if (compareTag(chunk, QOISpecification.QOI_OP_DIFF_TAG)){
+                buffer[position] = decodeQoiOpDiff(previousPixel, chunk);
+                index++;
+            }
+
+            // LUMA
+            else if (compareTag(chunk, QOISpecification.QOI_OP_LUMA_TAG)){
+                buffer[position] = decodeQoiOpLuma(previousPixel, ArrayUtils.concat(data[index], data[index+1]));
+                index += 2;
+            }
 
 
-        int position = 0;
+            // update the previous pixel
+            previousPixel = buffer[position];
+
+            byte hash = QOISpecification.hash(buffer[position]);
+            if (!ArrayUtils.equals(hashTable[hash], buffer[position]))
+            {
+                hashTable[hash] = buffer[position];
+            }
+        }
+
+
+        // ==================================================================================
+        // =============================== DECODING V.1 =====================================
+        // ==================================================================================
+
         //while (index < data.length){
-        for (int index = 0; index < data.length; index++) {
-            System.out.println("hello");
+
+        /*for (int index = 0; index < data.length; index++) {
 
             if (data[index] == QOISpecification.QOI_OP_RGB_TAG) {
                 index += 1 + decodeQoiOpRGB(buffer, data, previousPixel[3], position, index);
 
                 byte hash = QOISpecification.hash(buffer[position]);
-                if (!ArrayUtils.equals(hashTab[hash], buffer[position])) hashTab[hash] = buffer[position];
+                if (!ArrayUtils.equals(hashTable[hash], buffer[position])) hashTable[hash] = buffer[position];
 
 
                 previousPixel = buffer[position];
@@ -228,7 +291,7 @@ public final class QOIDecoder {
 
 
                 byte hash = QOISpecification.hash(buffer[position]);
-                if (!ArrayUtils.equals(hashTab[hash], buffer[position])) hashTab[hash] = buffer[position];
+                if (!ArrayUtils.equals(hashTable[hash], buffer[position])) hashTable[hash] = buffer[position];
 
 
                 previousPixel = buffer[position];
@@ -244,26 +307,28 @@ public final class QOIDecoder {
 
 
                 byte hash = QOISpecification.hash(buffer[position]);
-                if (!ArrayUtils.equals(hashTab[hash], buffer[position])) hashTab[hash] = buffer[position];
+                if (!ArrayUtils.equals(hashTable[hash], buffer[position])) hashTable[hash] = buffer[position];
 
                 if (index >= data.length) continue;
             }
+
             if ((byte) (data[index] & 0b11_00_00_00) == QOISpecification.QOI_OP_INDEX_TAG) {
                 index_tab[data[index] & 0b00_11_11_11] = position;
 
                 byte hash = QOISpecification.hash(buffer[position]);
-                if (!ArrayUtils.equals(hashTab[hash], buffer[position])) hashTab[hash] = buffer[position];
+                if (!ArrayUtils.equals(hashTable[hash], buffer[position])) hashTable[hash] = buffer[position];
 
                 position++;
                 index++;
                 if (index >= data.length) continue;
             }
+
             if ((byte) (data[index] & 0b11_00_00_00) == QOISpecification.QOI_OP_DIFF_TAG) {
                 buffer[position] = decodeQoiOpDiff(previousPixel, (byte) (data[index] & 0b00_11_11_11));
                 previousPixel = buffer[position];
 
                 byte hash = QOISpecification.hash(buffer[position]);
-                if (!ArrayUtils.equals(hashTab[hash], buffer[position])) hashTab[hash] = buffer[position];
+                if (!ArrayUtils.equals(hashTable[hash], buffer[position])) hashTable[hash] = buffer[position];
 
 
                 position++;
@@ -279,7 +344,7 @@ public final class QOIDecoder {
                 previousPixel = buffer[position];
 
                 byte hash = QOISpecification.hash(buffer[position]);
-                if (!ArrayUtils.equals(hashTab[hash], buffer[position])) hashTab[hash] = buffer[position];
+                if (!ArrayUtils.equals(hashTable[hash], buffer[position])) hashTable[hash] = buffer[position];
 
                 position++;
                 index += 2;
@@ -287,11 +352,25 @@ public final class QOIDecoder {
             }
 
 
-        }
+        }*/
         //for(int i=0; i<index_tab.length; i++)buffer[index_tab[i]]=hashTab[i];
 
-
         return buffer;
+    }
+
+    private static boolean compareTag(byte chunk, byte tag)
+    {
+        byte chunkTag = (byte)(chunk & 0b11_00_00_00);      // testing variable
+        return (byte)(chunk & 0b11_00_00_00) == tag;
+    }
+
+    /**
+     * @return 1. The number of pixels created
+     */
+    private static int decodeIndex(byte[][] buffer, byte[][] hashTable, byte hash, int position)
+    {
+        buffer[position] = hashTable[hash];
+        return 1;
     }
 
     /**
