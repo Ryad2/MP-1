@@ -63,13 +63,13 @@ public final class Main {
         //assert testEncodeData();
 
         // ========== Test QOIDecoder ==========
-        assert testDecodeHeader();
-        assert testDecodeQoiOpRGB();
-        assert testDecodeQoiOpRGBA();
-        assert testDecodeQoiOpDiff();
+        //assert testDecodeHeader();
+        //assert testDecodeQoiOpRGB();
+        //assert testDecodeQoiOpRGBA();
+        //assert testDecodeQoiOpDiff();
         //assert testDecodeQoiOpLuma();
         //assert testDecodeQoiOpRun();
-        //assert testDecodeData();
+        assert testDecodeData();
 
         System.out.println("All the tests passes. Congratulations");
     }
@@ -342,6 +342,7 @@ public final class Main {
     private static boolean testDecodeData(){
         byte[] encoding = {-62, 102, -115, -103, -76, 102, -2, 100, 100, 100, -1, 90, 90, 90, 90};
         byte[][] expected = { {0,0,0,-1}, {0,0,0,-1}, {0,0,0,-1}, {0,-1,0,-1},{-18,-20,-18,-1},{0,0,0,-1}, {100,100,100,-1}, {90,90,90,90}};
+        byte[][] buffer=QOIDecoder.decodeData(encoding, 4, 2);
         return Arrays.deepEquals(expected, QOIDecoder.decodeData(encoding, 4, 2));
     }
 
