@@ -92,7 +92,7 @@ public final class QOIDecoder {
         assert position >= 0 && position < buffer.length;
         assert idx >= 0 && idx < input.length;  // ask about this
 
-        assert input.length - idx >= 5;
+        assert input.length - idx >= 4;
 
         for (int i = 0; i < 4; i++) buffer[position][i] = input[idx + i];
 
@@ -221,12 +221,14 @@ public final class QOIDecoder {
 
             // RGBA
             if (chunk == QOISpecification.QOI_OP_RGBA_TAG){
-                index += decodeQoiOpRGBA(buffer, data, position, index+2);
+                index++;
+                index += decodeQoiOpRGBA(buffer, data, position, index);
             }
 
             // RGB
             else if (chunk == QOISpecification.QOI_OP_RGB_TAG){
-                index += decodeQoiOpRGB(buffer, data, previousPixel[3], position, index+1);
+                index++;
+                index += decodeQoiOpRGB(buffer, data, previousPixel[3], position, index);
             }
 
             // RUN
