@@ -61,7 +61,7 @@ public final class Main {
         //assert testQoiOpLuma();
         //assert testQoiOpRun();
         //assert testEncodeData();
-        //testNewEncodeData();
+        testNewEncodeData();
 
         // ========== Test QOIDecoder ==========
         //assert testDecodeHeader();
@@ -71,7 +71,7 @@ public final class Main {
         //assert testDecodeQoiOpLuma();
         //assert testDecodeQoiOpRun();
         // assert testDecodeData();
-        testNewDecodeData();
+        //testNewDecodeData();
 
         System.out.println("All the tests passes. Congratulations");
     }
