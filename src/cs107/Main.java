@@ -61,6 +61,7 @@ public final class Main {
         //assert testQoiOpLuma();
         //assert testQoiOpRun();
         //assert testEncodeData();
+        //testNewEncodeData();
 
         // ========== Test QOIDecoder ==========
         //assert testDecodeHeader();
@@ -69,7 +70,8 @@ public final class Main {
         //assert testDecodeQoiOpDiff();
         //assert testDecodeQoiOpLuma();
         //assert testDecodeQoiOpRun();
-        assert testDecodeData();
+        // assert testDecodeData();
+        testNewDecodeData();
 
         System.out.println("All the tests passes. Congratulations");
     }
@@ -276,6 +278,15 @@ public final class Main {
         return Arrays.equals(expected, encoding);
     }
 
+    private static void testNewEncodeData() {
+        byte[][]  pixels = { {0,0,0,-1}, {0,0,0,-1}, {0,0,0,-1}, {0,-1,0,-1},{-18,-20,-18,-1},{0,0,0,-1}, {100,100,100,-1}, {90,90,90,90}, {0,0,0,-1}};
+        byte[] data = QOIEncoder.encodeData(pixels);
+        for(byte encodedByte: data)
+        {
+            System.out.println(encodedByte);
+        }
+    }
+
     // ============================================================================================
     // ============================== QOIDecoder examples =========================================
     // ============================================================================================
@@ -348,4 +359,13 @@ public final class Main {
         return Arrays.deepEquals(expected, QOIDecoder.decodeData(encoding, 4, 2));
     }
 
+    private static void testNewDecodeData(){
+        byte[] encoding = {-62, 102, -115, -103, -76, 102, -2, 100, 100, 100, -1, 90, 90, 90, 90, 53};
+        byte[][] buffer = QOIDecoder.decodeData(encoding, 4, 3);
+
+        for (byte[] pixel: buffer)
+        {
+            System.out.printf("%d, %d, %d, %d, %n", pixel[0], pixel[1], pixel[2], pixel[3]);
+        }
+    }
 }

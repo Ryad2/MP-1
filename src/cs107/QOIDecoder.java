@@ -70,7 +70,9 @@ public final class QOIDecoder {
 
         assert input.length - idx >= 4;
 
-        for (int i = 0; i < 3; i++) buffer[position][i] = input[idx + i];
+        for (int i = 1; i < 4; i++) {
+            buffer[position][i-1] = input[idx + i];
+        }
         buffer[position][3] = alpha;
 
         // why 3? should there be a calculation
@@ -92,9 +94,11 @@ public final class QOIDecoder {
         assert position >= 0 && position < buffer.length;
         assert idx >= 0 && idx < input.length;  // ask about this
 
-        assert input.length - idx >= 4;
+        assert input.length - idx >= 5;
 
-        for (int i = 0; i < 4; i++) buffer[position][i] = input[idx + i];
+        for (int i = 1; i < 5; i++) {
+            buffer[position][i-1] = input[idx + i];
+        }
 
         return 4;// return the number of consumed bytes
     }
@@ -221,14 +225,14 @@ public final class QOIDecoder {
 
             // RGBA
             if (chunk == QOISpecification.QOI_OP_RGBA_TAG){
-                index++;
                 index += decodeQoiOpRGBA(buffer, data, position, index);
+                index++;
             }
 
             // RGB
             else if (chunk == QOISpecification.QOI_OP_RGB_TAG){
-                index++;
                 index += decodeQoiOpRGB(buffer, data, previousPixel[3], position, index);
+                index++;
             }
 
             // RUN
