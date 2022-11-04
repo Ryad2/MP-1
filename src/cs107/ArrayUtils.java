@@ -97,8 +97,8 @@ public final class ArrayUtils {
         assert bytes != null && bytes.length==4 : "the input is null or the input's length is different from 4 ";
 
         int x = 0;
-        for (int i = 0; i < bytes.length; i++) {
-            x = (x << 8) + bytes[i];
+        for (byte aByte : bytes) {
+            x = (x << 8) + aByte;
         }
         return x;
     }
@@ -168,11 +168,11 @@ public final class ArrayUtils {
         byte[] result = new byte[l];
 
         int x = 0;
-        for (int i = 0; i < tabs.length; i++) {
-            for (int j = 0; j < tabs[i].length; j++) {
-                result[x + j] = tabs[i][j];
+        for (byte[] tab : tabs) {
+            for (int j = 0; j < tab.length; j++) {
+                result[x + j] = tab[j];
             }
-            x += tabs[i].length;
+            x += tab.length;
         }
         return result;
 
@@ -270,7 +270,7 @@ public final class ArrayUtils {
         int index = 0;
         for (int[] width : input) {
             for (int height :width) {
-                result[index] = ARBGtoRGBA(fromInt(height));
+                result[index] = CustomHelpers.ARBGtoRGBA(fromInt(height));
                 index++;
             }
         }
@@ -323,7 +323,7 @@ public final class ArrayUtils {
 
         for (int i = 0; i < height; i++) {
             for (int j = 0; j < width; j++){
-                result[i][j] = toInt(RGBAtoARGB(input[i * width+j]));
+                result[i][j] = toInt(CustomHelpers.RGBAtoARGB(input[i * width+j]));
             }
         }
         return result;

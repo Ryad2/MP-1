@@ -70,8 +70,8 @@ public final class QOIDecoder {
 
         assert input.length - idx >= 4;
 
-        for (int i = 1; i < 4; i++) {
-            buffer[position][i-1] = input[idx + i];
+        for (int i = 0; i < 3; i++) {
+            buffer[position][i] = input[idx + i];
         }
         buffer[position][3] = alpha;
 
@@ -94,10 +94,10 @@ public final class QOIDecoder {
         assert position >= 0 && position < buffer.length;
         assert idx >= 0 && idx < input.length;  // ask about this
 
-        assert input.length - idx >= 5;
+        assert input.length - idx >= 4;
 
-        for (int i = 1; i < 5; i++) {
-            buffer[position][i-1] = input[idx + i];
+        for (int i = 0; i < 4; i++) {
+            buffer[position][i] = input[idx + i];
         }
 
         return 4;// return the number of consumed bytes
@@ -202,7 +202,7 @@ public final class QOIDecoder {
     public static byte[][] decodeData(byte[] data, int width, int height) {
         assert data != null;
         assert width > 0 && height > 0;
-        assert data.length > width * height;//NOT CORRECT
+        //assert data.length > width * height;//NOT CORRECT
 
         byte[] previousPixel = QOISpecification.START_PIXEL;
         byte[][] hashTable = new byte[64][4];
@@ -211,155 +211,52 @@ public final class QOIDecoder {
         //int[] index_tab = new int[64];
 
         //int position = 0;
-        int position = -1;
-
-        // ==================================================================================
-        // =============================== DECODING V.2 =====================================
-        // ==================================================================================
-
+        int position = 0;
         int index = 0;
+
         while (index < data.length)
         {
-            position++;
             byte chunk = data[index];
 
-            // RGBA
-            if (chunk == QOISpecification.QOI_OP_RGBA_TAG){
-                index += decodeQoiOpRGBA(buffer, data, position, index);
-                index++;
+            // RGB
+            if (chunk == QOISpecification.QOI_OP_RGB_TAG){
+                index += decodeQoiOpRGB(buffer, data, previousPixel[3], position, ++index);
             }
 
-            // RGB
-            else if (chunk == QOISpecification.QOI_OP_RGB_TAG){
-                index += decodeQoiOpRGB(buffer, data, previousPixel[3], position, index);
+            // RGBA
+            else if (chunk == QOISpecification.QOI_OP_RGBA_TAG){
+                index += decodeQoiOpRGBA(buffer, data, position, ++index);
+            }
+
+            // INDEX
+            else if (compareTag(chunk, QOISpecification.QOI_OP_INDEX_TAG)){
+                decodeIndex(buffer, hashTable, chunk, position);
+            }
+
+            // DIFF
+            else if (compareTag(chunk, QOISpecification.QOI_OP_DIFF_TAG)){
+                buffer[position] = decodeQoiOpDiff(previousPixel, chunk);
+            }
+
+            // LUMA
+            else if (compareTag(chunk, QOISpecification.QOI_OP_LUMA_TAG)){
+                buffer[position] = decodeQoiOpLuma(previousPixel, ArrayUtils.concat(chunk, data[index+1]));
                 index++;
             }
 
             // RUN
             else if (compareTag(chunk, QOISpecification.QOI_OP_RUN_TAG)){
                 position += decodeQoiOpRun(buffer, previousPixel, chunk, position);
-                index++;
             }
 
-            // INDEX
-            else if (compareTag(chunk, QOISpecification.QOI_OP_INDEX_TAG)){
-                index += decodeIndex(buffer, hashTable, chunk, position);
-            }
-
-            // DIFF
-            else if (compareTag(chunk, QOISpecification.QOI_OP_DIFF_TAG)){
-                buffer[position] = decodeQoiOpDiff(previousPixel, chunk);
-                index++;
-            }
-
-            // LUMA
-            else if (compareTag(chunk, QOISpecification.QOI_OP_LUMA_TAG)){
-                buffer[position] = decodeQoiOpLuma(previousPixel, ArrayUtils.concat(data[index], data[index+1]));
-                index += 2;
-            }
-
-
-            // update the previous pixel
             previousPixel = buffer[position];
+            index++;
 
             byte hash = QOISpecification.hash(buffer[position]);
-            if (!ArrayUtils.equals(hashTable[hash], buffer[position]))
-            {
-                hashTable[hash] = buffer[position];
-            }
+            hashTable[hash] = buffer[position];
+
+            position++;
         }
-
-
-        // ==================================================================================
-        // =============================== DECODING V.1 =====================================
-        // ==================================================================================
-
-        //while (index < data.length){
-
-        /*for (int index = 0; index < data.length; index++) {
-
-            if (data[index] == QOISpecification.QOI_OP_RGB_TAG) {
-                index += 1 + decodeQoiOpRGB(buffer, data, previousPixel[3], position, index);
-
-                byte hash = QOISpecification.hash(buffer[position]);
-                if (!ArrayUtils.equals(hashTable[hash], buffer[position])) hashTable[hash] = buffer[position];
-
-
-                previousPixel = buffer[position];
-                position++;
-                if (index >= data.length) continue;
-
-            }
-
-            if (data[index] == QOISpecification.QOI_OP_RGBA_TAG) {
-
-                index += 1 + decodeQoiOpRGBA(buffer, data, position, index);
-
-
-                byte hash = QOISpecification.hash(buffer[position]);
-                if (!ArrayUtils.equals(hashTable[hash], buffer[position])) hashTable[hash] = buffer[position];
-
-
-                previousPixel = buffer[position];
-                position++;
-                if (index >= data.length) continue;
-            }
-
-            if ((byte) (data[index] & 0b11_00_00_00) == QOISpecification.QOI_OP_RUN_TAG) {
-                int temp = decodeQoiOpRun(buffer, previousPixel, (byte) (data[index]), position);
-                previousPixel = buffer[position];
-                index++;
-                position += temp+1;
-
-
-                byte hash = QOISpecification.hash(buffer[position]);
-                if (!ArrayUtils.equals(hashTable[hash], buffer[position])) hashTable[hash] = buffer[position];
-
-                if (index >= data.length) continue;
-            }
-
-            if ((byte) (data[index] & 0b11_00_00_00) == QOISpecification.QOI_OP_INDEX_TAG) {
-                index_tab[data[index] & 0b00_11_11_11] = position;
-
-                byte hash = QOISpecification.hash(buffer[position]);
-                if (!ArrayUtils.equals(hashTable[hash], buffer[position])) hashTable[hash] = buffer[position];
-
-                position++;
-                index++;
-                if (index >= data.length) continue;
-            }
-
-            if ((byte) (data[index] & 0b11_00_00_00) == QOISpecification.QOI_OP_DIFF_TAG) {
-                buffer[position] = decodeQoiOpDiff(previousPixel, (byte) (data[index] & 0b00_11_11_11));
-                previousPixel = buffer[position];
-
-                byte hash = QOISpecification.hash(buffer[position]);
-                if (!ArrayUtils.equals(hashTable[hash], buffer[position])) hashTable[hash] = buffer[position];
-
-
-                position++;
-                index++;
-                if (index >= data.length) continue;
-            }
-
-            if ((byte) (data[index] & 0b11_00_00_00) == QOISpecification.QOI_OP_LUMA_TAG) {
-
-                //System.out.println(Integer.toBinaryString((byte)-76));
-
-                buffer[position] = decodeQoiOpLuma(previousPixel, ArrayUtils.concat(data[index], data[index + 1]));
-                previousPixel = buffer[position];
-
-                byte hash = QOISpecification.hash(buffer[position]);
-                if (!ArrayUtils.equals(hashTable[hash], buffer[position])) hashTable[hash] = buffer[position];
-
-                position++;
-                index += 2;
-                if (index >= data.length) continue;
-            }
-
-
-        }*/
-        //for(int i=0; i<index_tab.length; i++)buffer[index_tab[i]]=hashTab[i];
 
         return buffer;
     }
@@ -370,13 +267,9 @@ public final class QOIDecoder {
         return (byte)(chunk & 0b11_00_00_00) == tag;
     }
 
-    /**
-     * @return 1. The number of pixels created
-     */
-    private static int decodeIndex(byte[][] buffer, byte[][] hashTable, byte hash, int position)
+    private static void decodeIndex(byte[][] buffer, byte[][] hashTable, byte hash, int position)
     {
         buffer[position] = hashTable[hash];
-        return 1;
     }
 
     /**
@@ -387,7 +280,19 @@ public final class QOIDecoder {
      * @throws AssertionError if content is null
      */
     public static Image decodeQoiFile(byte[] content) {
-        return Helper.fail("Not Implemented");
-    }
+        assert content != null;
+        assert ArrayUtils.equals(ArrayUtils.extract(content, 0, 4), QOISpecification.QOI_MAGIC);
+        assert ArrayUtils.equals(ArrayUtils.extract(content, content.length-8, 8), QOISpecification.QOI_EOF);
 
+        int[] decodedHeader = decodeHeader(ArrayUtils.extract(content, 0, QOISpecification.HEADER_SIZE));
+
+        int width = decodedHeader[0];
+        int height = decodedHeader[1];
+
+        byte[] data = ArrayUtils.extract(content, QOISpecification.HEADER_SIZE, content.length - QOISpecification.HEADER_SIZE);
+        data = ArrayUtils.extract(data, 0, data.length - QOISpecification.QOI_EOF.length);
+        byte[][] decodedData = decodeData(data, width, height);
+
+        return Helper.generateImage(ArrayUtils.channelsToImage(decodedData, height, width), (byte)decodedHeader[2], (byte)decodedHeader[3]);
+    }
 }

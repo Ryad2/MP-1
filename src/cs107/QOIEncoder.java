@@ -39,11 +39,14 @@ public final class QOIEncoder {
 
         byte[] result = new byte[QOISpecification.HEADER_SIZE];
 
-        for (int i = 0; i < 4; i++)  result[i] = QOISpecification.QOI_MAGIC[i];
+        result = ArrayUtils.concat(QOISpecification.QOI_MAGIC, width, height,
+                ArrayUtils.wrap(image.channels()), ArrayUtils.wrap(image.color_space()));
+
+        /*for (int i = 0; i < 4; i++)  result[i] = QOISpecification.QOI_MAGIC[i];
         for (int i = 4; i < 8; i++)  result[i] = width[i-4];
         for (int i = 8; i < 12; i++)  result[i] = height[i-8];
         result[12] = image.channels();
-        result[13] = image.color_space();
+        result[13] = image.color_space();*/
 
         return result;
     }
@@ -213,24 +216,24 @@ public final class QOIEncoder {
                 hashTable[hash] = pixel;
             }
 
+            // RGBA
+            if (pixel[3] != previousPixel[3]){
+                encodedData.add(qoiOpRGBA(pixel));
+            }
+
             // DIFF
-            if (pixel[3] == previousPixel[3] && diff(pixel, previousPixel, difference)){
+            else if (CustomHelpers.diff(pixel, previousPixel, difference)){
                 encodedData.add(qoiOpDiff(difference));
             }
 
             // LUMA
-            else if (pixel[3] == previousPixel[3] && luma(pixel, previousPixel, difference)){
+            else if (CustomHelpers.luma(pixel, previousPixel, difference)){
                 encodedData.add(qoiOpLuma(difference));
             }
 
             // RGB
-            else if (pixel[3] == previousPixel[3]){
-                encodedData.add(qoiOpRGB(pixel));
-            }
-
-            // RGBA
             else{
-                encodedData.add(qoiOpRGBA(pixel));
+                encodedData.add(qoiOpRGB(pixel));
             }
 
             previousPixel = pixel;
@@ -240,8 +243,8 @@ public final class QOIEncoder {
         // =============================== ENCODING V.1 =====================================
         // ==================================================================================
 
-        /*
-        for (int i = 0; i < image.length; i++) {
+
+        /*for (int i = 0; i < image.length; i++) {
 
             // QOI_OP_RUN Block step1
 
@@ -299,8 +302,8 @@ public final class QOIEncoder {
             encodedData.add(qoiOpRGBA(image[i]));
 
             previousPixel = image[i];
-        }
-*/
+        }*/
+
         byte[][] result = new byte[encodedData.size()][];
         int i = 0;
         for (byte[] data : encodedData) {
@@ -312,13 +315,13 @@ public final class QOIEncoder {
     }
 
     // version 2
-    public static boolean diff (byte[] current, byte[] previous, byte[] difference){
+    /*public static boolean diff (byte[] current, byte[] previous, byte[] difference){
         getDiff(current, previous, difference);
         for (byte valueDifference : difference) {
             if (valueDifference > 1 || valueDifference < -2) return false;
         }
         return true;
-    }
+    }*/
 
     // version 1
     public static boolean diff(byte[] current, byte[]previous){
@@ -329,14 +332,14 @@ public final class QOIEncoder {
     }
 
     // version 2
-    public static void getDiff(byte[] current, byte[] previous, byte[] difference) {
+    /*public static void getDiff(byte[] current, byte[] previous, byte[] difference) {
         for (int i = 0; i < 3; i++){
             difference[i] = (byte)(current[i] - previous[i]);
         }
-    }
+    }*/
 
     // version 2
-    private static boolean luma(byte[] current, byte[] previous, byte[] difference){
+    /*private static boolean luma(byte[] current, byte[] previous, byte[] difference){
         getDiff(current, previous, difference);
 
         if (difference[1] >= 32 || difference[1] <= -32) return false;
@@ -377,6 +380,8 @@ public final class QOIEncoder {
     public static byte[] qoiFile(Helper.Image image){
         assert image!=null;
 
-        return Helper.fail("Not Implemented");
+        byte[] encodedData = encodeData(ArrayUtils.imageToChannels(image.data()));
+
+        return ArrayUtils.concat(qoiHeader(image), encodedData, QOISpecification.QOI_EOF);
     }
 }

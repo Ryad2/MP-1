@@ -61,7 +61,7 @@ public final class Main {
         //assert testQoiOpLuma();
         //assert testQoiOpRun();
         //assert testEncodeData();
-        testNewEncodeData();
+        //testNewEncodeData();
 
         // ========== Test QOIDecoder ==========
         //assert testDecodeHeader();
@@ -70,8 +70,17 @@ public final class Main {
         //assert testDecodeQoiOpDiff();
         //assert testDecodeQoiOpLuma();
         //assert testDecodeQoiOpRun();
-        // assert testDecodeData();
+        //assert testDecodeData();
         //testNewDecodeData();
+
+
+
+        // creates the wrong image
+        //qoiToPng("references/random.qoi", "random.png");
+
+
+        pngToQoi("references/MP-1_random.png", "MP-1_random.qoi");
+        qoiToPng("res/MP-1_random.qoi", "MP-1_random.png");
 
         System.out.println("All the tests passes. Congratulations");
     }
@@ -279,7 +288,8 @@ public final class Main {
     }
 
     private static void testNewEncodeData() {
-        byte[][]  pixels = { {0,0,0,-1}, {0,0,0,-1}, {0,0,0,-1}, {0,-1,0,-1},{-18,-20,-18,-1},{0,0,0,-1}, {100,100,100,-1}, {90,90,90,90}, {0,0,0,-1}};
+        byte[][]  pixels = { {0,0,0,-1}, {0,0,0,-1}, {0,0,0,-1}, {0,-1,0,-1},{-18,-20,-18,-1},{0,0,0,-1},
+                {100,100,100,-1}, {90,90,90,90}, {0,0,0,-1}, {0,0,0,-1}, {0,-1,0,-1}, {90,90,90,90}};
         byte[] data = QOIEncoder.encodeData(pixels);
         for(byte encodedByte: data)
         {
@@ -360,7 +370,7 @@ public final class Main {
     }
 
     private static void testNewDecodeData(){
-        byte[] encoding = {-62, 102, -115, -103, -76, 102, -2, 100, 100, 100, -1, 90, 90, 90, 90, 53};
+        byte[] encoding = {-62, 102, -115, -103, -76, 102, -2, 100, 100, 100, -1, 90, 90, 90, 90, 53, -64, 48, 36};
         byte[][] buffer = QOIDecoder.decodeData(encoding, 4, 3);
 
         for (byte[] pixel: buffer)
