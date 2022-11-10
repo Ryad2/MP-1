@@ -1,6 +1,7 @@
 package cs107;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 
 /**
  * "Quite Ok Image" Encoder
@@ -195,6 +196,7 @@ public final class QOIEncoder {
                 if (counter == 62 || index == image.length - 1) {
                     encodedData.add(qoiOpRun(counter));
                     counter = 0;
+                    System.out.println("run");
                 }
 
                 previousPixel = pixel;
@@ -209,6 +211,7 @@ public final class QOIEncoder {
             if (ArrayUtils.equals(hashTable[hash], pixel)){
                 encodedData.add(qoiOpIndex(hash));
 
+                System.out.println("index");
                 previousPixel = pixel;
                 continue;
             }
@@ -219,21 +222,25 @@ public final class QOIEncoder {
             // RGBA
             if (pixel[3] != previousPixel[3]){
                 encodedData.add(qoiOpRGBA(pixel));
+                System.out.println("rbga");
             }
 
             // DIFF
             else if (CustomHelpers.diff(pixel, previousPixel, difference)){
                 encodedData.add(qoiOpDiff(difference));
+                System.out.println("diff");
             }
 
             // LUMA
             else if (CustomHelpers.luma(pixel, previousPixel, difference)){
                 encodedData.add(qoiOpLuma(difference));
+                System.out.println("luma");
             }
 
             // RGB
             else{
                 encodedData.add(qoiOpRGB(pixel));
+                System.out.println("rgb");
             }
 
             previousPixel = pixel;
@@ -243,8 +250,8 @@ public final class QOIEncoder {
         // =============================== ENCODING V.1 =====================================
         // ==================================================================================
 
-
-        /*for (int i = 0; i < image.length; i++) {
+        /*
+        for (int i = 0; i < image.length; i++) {
 
             // QOI_OP_RUN Block step1
 
@@ -302,14 +309,20 @@ public final class QOIEncoder {
             encodedData.add(qoiOpRGBA(image[i]));
 
             previousPixel = image[i];
-        }*/
+        }
+        */
 
+        // turn encoded data into byte[]
         byte[][] result = new byte[encodedData.size()][];
         int i = 0;
         for (byte[] data : encodedData) {
             result[i] = data;
             i++;
+
+            System.out.println(Arrays.toString(data));
         }
+
+        Hexdump.hexdump(ArrayUtils.concat(result));
 
         return ArrayUtils.concat(result);
     }
@@ -347,7 +360,7 @@ public final class QOIEncoder {
             if (difference[i] - difference[1] >= 8 || difference[i] - difference[1] <= -9) return false;
         }
         return true;
-    }
+    }*/
 
     // version 1
     public static boolean luma (byte[] current, byte[] previous){
