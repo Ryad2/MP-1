@@ -323,9 +323,11 @@ public final class ArrayUtils {
 
         for (int i = 0; i < height; i++) {
             for (int j = 0; j < width; j++){
-                result[i][j] = toInt(CustomHelpers.RGBAtoARGB(input[i * width+j]));
+                result[i][j] = toInt(CustomHelpers.RGBAtoARGB(input[i * (width)+j]));
             }
         }
+
+
         return result;
     }
 

@@ -393,7 +393,9 @@ public final class QOIEncoder {
     public static byte[] qoiFile(Helper.Image image){
         assert image!=null;
 
-        byte[] encodedData = encodeData(ArrayUtils.imageToChannels(image.data()));
+        int[][] dalas =image.data();
+        byte[] encodedData = encodeData(ArrayUtils.imageToChannels(dalas));
+
 
         return ArrayUtils.concat(qoiHeader(image), encodedData, QOISpecification.QOI_EOF);
     }

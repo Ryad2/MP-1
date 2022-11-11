@@ -68,7 +68,7 @@ public final class QOIDecoder {
         assert position >= 0 && position < buffer.length;
         assert idx >= 0 && idx < input.length;  // ask about this
 
-        assert input.length - idx >= 4;
+        assert input.length - idx >= 3;
 
         for (int i = 0; i < 3; i++) {
             buffer[position][i] = input[idx + i];
@@ -225,6 +225,7 @@ public final class QOIDecoder {
 
             // RGBA
             else if (chunk == QOISpecification.QOI_OP_RGBA_TAG){
+
                 index += decodeQoiOpRGBA(buffer, data, position, ++index);
             }
 
@@ -292,7 +293,9 @@ public final class QOIDecoder {
         byte[] data = ArrayUtils.extract(content, QOISpecification.HEADER_SIZE, content.length - QOISpecification.HEADER_SIZE);
         data = ArrayUtils.extract(data, 0, data.length - QOISpecification.QOI_EOF.length);
         byte[][] decodedData = decodeData(data, width, height);
+        //for(byte[] da:decodedData) da=CustomHelpers.RGBAtoARGB(da);
+        int[][]texas=ArrayUtils.channelsToImage(decodedData, height, width);
 
-        return Helper.generateImage(ArrayUtils.channelsToImage(decodedData, height, width), (byte)decodedHeader[2], (byte)decodedHeader[3]);
+        return Helper.generateImage(texas, (byte)decodedHeader[2], (byte)decodedHeader[3]);
     }
 }
