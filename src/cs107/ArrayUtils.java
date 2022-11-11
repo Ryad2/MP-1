@@ -96,11 +96,25 @@ public final class ArrayUtils {
     public static int toInt(byte[] bytes) {
         assert bytes != null && bytes.length==4 : "the input is null or the input's length is different from 4 ";
 
-        int x = 0;
-        for (byte aByte : bytes) {
-            x = (x << 8) + aByte;
-        }
-        return x;
+        int result=0;
+        /*for (int i=0; i<bytes.length; i++) {
+            result = result<<8;
+            result=  result + bytes[i];
+        }*/
+
+
+        result=(bytes[0]&0b11_11_11_11);
+        result=result<<8;
+        result=result+(bytes[1]&0b11_11_11_11);
+        result=result<<8;
+        result=result+(bytes[2]&0b11_11_11_11);
+        result=result<<8;
+        result=result+(bytes[3]&0b11_11_11_11);
+
+
+
+
+        return result;
     }
 
     /**

@@ -76,57 +76,57 @@ public final class Main {
 
 
         // creates the wrong image
-        //qoiToPng("references/random.qoi", "random.png");
-        //Diff.diff("references/random.png", "res/random.png");
+        qoiToPng("references/random.qoi", "random.png");
+        Diff.diff("references/random.png", "res/random.png");
 
 
-        //qoiToPng("references/beach.qoi", "beach.png");
-        //Diff.diff("references/beach.png", "res/beach.png");
+        qoiToPng("references/beach.qoi", "beach.png");
+        Diff.diff("references/beach.png", "res/beach.png");
 
 
-        //qoiToPng("references/cube.qoi", "cube.png");
-        //Diff.diff("references/cube.png", "res/cube.png");
-
-
-
-        //qoiToPng("references/dice.qoi", "dice.png");
-        //Diff.diff("references/dice.png", "res/dice.png");
-
-
-        //qoiToPng("references/EPFL.qoi", "EPFL.png");
-        //Diff.diff("references/EPFL.png", "res/EPFL.png");
+        qoiToPng("references/cube.qoi", "cube.png");
+        Diff.diff("references/cube.png", "res/cube.png");
 
 
 
-        //pngToQoi("references/MP-1_random.png", "MP-1_random.qoi");
+        qoiToPng("references/dice.qoi", "dice.png");
+        Diff.diff("references/dice.png", "res/dice.png");
 
 
-        //qoiToPng("references/qoi_op_diff.qoi", "qoi_op_diff.png");
-        //Diff.diff("references/qoi_op_diff.png", "res/qoi_op_diff.png");
-
-        //qoiToPng("references/qoi_op_index.qoi", "qoi_op_index.png");
-        //Diff.diff("references/qoi_op_index.png", "res/qoi_op_diff.png")
+        qoiToPng("references/EPFL.qoi", "EPFL.png");
+       Diff.diff("references/EPFL.png", "res/EPFL.png");
 
 
 
-        //qoiToPng("references/qoi_op_luma.qoi", "qoi_op_luma.png");
-        //Diff.diff("references/qoi_op_luma.png", "res/qoi_op_luma.png");
 
 
-        //qoiToPng("references/qoi_op_rgb.qoi", "qoi_op_rgb.png");
-        //Diff.diff("references/qoi_op_rgb.png", "res/qoi_op_rgb.png");
+
+        qoiToPng("references/qoi_op_diff.qoi", "qoi_op_diff.png");
+        Diff.diff("references/qoi_op_diff.png", "res/qoi_op_diff.png");
+
+        qoiToPng("references/qoi_op_index.qoi", "qoi_op_index.png");
+        Diff.diff("references/qoi_op_index.png", "res/qoi_op_diff.png");
+
+
+
+        qoiToPng("references/qoi_op_luma.qoi", "qoi_op_luma.png");
+        Diff.diff("references/qoi_op_luma.png", "res/qoi_op_luma.png");
+
+
+        qoiToPng("references/qoi_op_rgb.qoi", "qoi_op_rgb.png");
+        Diff.diff("references/qoi_op_rgb.png", "res/qoi_op_rgb.png");
 
 
        pngToQoi("references/qoi_op_rgb.png", "qoi_op_rgb.qoi");
        Diff.diff("references/qoi_op_rgb.qoi", "res/qoi_op_rgb.qoi");
 
 
-        //qoiToPng("references/qoi_op_rgba.qoi", "qoi_op_rgba.png");
-        //Diff.diff("references/qoi_op_rgba.png", "res/qoi_op_rgba.png");
+        qoiToPng("references/qoi_op_rgba.qoi", "qoi_op_rgba.png");
+        Diff.diff("references/qoi_op_rgba.png", "res/qoi_op_rgba.png");
 
 
-        //qoiToPng("references/qoi_op_run.qoi", "qoi_op_run.png");
-        //Diff.diff("references/qoi_op_run.png", "res/qoi_op_run.png");
+       qoiToPng("references/qoi_op_run.qoi", "qoi_op_run.png");
+       Diff.diff("references/qoi_op_run.png", "res/qoi_op_run.png");
 
 
         System.out.println("All the tests passes. Congratulations");

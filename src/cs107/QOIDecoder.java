@@ -202,7 +202,7 @@ public final class QOIDecoder {
     public static byte[][] decodeData(byte[] data, int width, int height) {
         assert data != null;
         assert width > 0 && height > 0;
-        //assert data.length > width * height;//NOT CORRECT
+        //assert data.length >= width * height;//SHOULD SEE IT AGAIN
 
         byte[] previousPixel = QOISpecification.START_PIXEL;
         byte[][] hashTable = new byte[64][4];
