@@ -41,98 +41,127 @@ public final class Main {
         your program
          */
 
+        System.out.println("start tests");
+
         // ========== Test ArrayUtils ==========
-        //assert testWrap();
-        //assert testToInt();
-        //assert testFromInt();
-        //assert testConcatBytes();
-        //assert testConcatArrayBytes();
-        //assert testExtract();
-        //assert testPartition();
-        //assert testImageToChannels();
-        //assert testChannelsToImage();
+        assert testWrap();
+        assert testToInt();
+        assert testFromInt();
+        assert testConcatBytes();
+        assert testConcatArrayBytes();
+        assert testExtract();
+        assert testPartition();
+        assert testImageToChannels();
+        assert testChannelsToImage();
 
         // ========== Test QOIEncoder ==========
-        //assert testQoiHeader();
-        //assert testQoiOpRGB();
-        //assert testQoiOpRGBA();
-        //assert testQoiOpIndex();
-        //assert testQoiOpDiff();
-        //assert testQoiOpLuma();
-        //assert testQoiOpRun();
-        //assert testEncodeData();
+        assert testQoiHeader();
+        assert testQoiOpRGB();
+        assert testQoiOpRGBA();
+        assert testQoiOpIndex();
+        assert testQoiOpDiff();
+        assert testQoiOpLuma();
+        assert testQoiOpRun();
+        assert testEncodeData();
         //testNewEncodeData();
 
         // ========== Test QOIDecoder ==========
-        //assert testDecodeHeader();
-        //assert testDecodeQoiOpRGB();
-        //assert testDecodeQoiOpRGBA();
-        //assert testDecodeQoiOpDiff();
-        //assert testDecodeQoiOpLuma();
-        //assert testDecodeQoiOpRun();
-        //assert testDecodeData();
+        assert testDecodeHeader();
+        assert testDecodeQoiOpRGB();
+        assert testDecodeQoiOpRGBA();
+        assert testDecodeQoiOpDiff();
+        assert testDecodeQoiOpLuma();
+        assert testDecodeQoiOpRun();
+        assert testDecodeData();
         //testNewDecodeData();
 
 
-
-        // creates the wrong image
-        qoiToPng("references/random.qoi", "random.png");
-        Diff.diff("references/random.png", "res/random.png");
+        // test decoder
 
 
         qoiToPng("references/beach.qoi", "beach.png");
         Diff.diff("references/beach.png", "res/beach.png");
 
-
         qoiToPng("references/cube.qoi", "cube.png");
         Diff.diff("references/cube.png", "res/cube.png");
-
-
 
         qoiToPng("references/dice.qoi", "dice.png");
         Diff.diff("references/dice.png", "res/dice.png");
 
-
         qoiToPng("references/EPFL.qoi", "EPFL.png");
-       Diff.diff("references/EPFL.png", "res/EPFL.png");
-
-
-
-
-
+        Diff.diff("references/EPFL.png", "res/EPFL.png");
 
         qoiToPng("references/qoi_op_diff.qoi", "qoi_op_diff.png");
         Diff.diff("references/qoi_op_diff.png", "res/qoi_op_diff.png");
 
         qoiToPng("references/qoi_op_index.qoi", "qoi_op_index.png");
-        Diff.diff("references/qoi_op_index.png", "res/qoi_op_diff.png");
-
-
+        Diff.diff("references/qoi_op_index.png", "res/qoi_op_index.png");
 
         qoiToPng("references/qoi_op_luma.qoi", "qoi_op_luma.png");
         Diff.diff("references/qoi_op_luma.png", "res/qoi_op_luma.png");
 
-
         qoiToPng("references/qoi_op_rgb.qoi", "qoi_op_rgb.png");
         Diff.diff("references/qoi_op_rgb.png", "res/qoi_op_rgb.png");
-
-
-       pngToQoi("references/qoi_op_rgb.png", "qoi_op_rgb.qoi");
-       Diff.diff("references/qoi_op_rgb.qoi", "res/qoi_op_rgb.qoi");
-
 
         qoiToPng("references/qoi_op_rgba.qoi", "qoi_op_rgba.png");
         Diff.diff("references/qoi_op_rgba.png", "res/qoi_op_rgba.png");
 
+        qoiToPng("references/qoi_op_run.qoi", "qoi_op_run.png");
+        Diff.diff("references/qoi_op_run.png", "res/qoi_op_run.png");
 
-       qoiToPng("references/qoi_op_run.qoi", "qoi_op_run.png");
-       Diff.diff("references/qoi_op_run.png", "res/qoi_op_run.png");
+
+        // test encode
+
+
+        pngToQoi("references/random.png", "random.qoi");
+        Diff.diff("references/random.qoi", "res/random.qoi");
+
+        pngToQoi("references/qoi_op_run.png", "qoi_op_run.qoi");
+        Diff.diff("references/qoi_op_run.qoi", "res/qoi_op_run.qoi");
+
+        pngToQoi("references/qoi_op_rgba.png", "qoi_op_rgba.qoi");
+        Diff.diff("references/qoi_op_rgba.qoi", "res/qoi_op_rgba.qoi");
+
+        pngToQoi("references/qoi_op_rgb.png", "qoi_op_rgb.qoi");
+        Diff.diff("references/qoi_op_rgb.qoi", "res/qoi_op_rgb.qoi");
+
+        pngToQoi("references/qoi_op_luma.png", "qoi_op_luma.qoi");
+        Diff.diff("references/qoi_op_luma.qoi", "res/qoi_op_luma.qoi");
+
+        pngToQoi("references/qoi_op_index.png", "qoi_op_index.qoi");
+        Diff.diff("references/qoi_op_index.qoi", "res/qoi_op_index.qoi");
+
+        pngToQoi("references/qoi_op_diff.png", "qoi_op_diff.qoi");
+        Diff.diff("references/qoi_op_diff.qoi", "res/qoi_op_diff.qoi");
+
+        pngToQoi("references/qoi_encode_test.png", "qoi_encode_test.qoi");
+        Diff.diff("references/qoi_encode_test.qoi", "res/qoi_encode_test.qoi");
+
+        pngToQoi("references/EPFL.png", "EPFL.qoi");
+        Diff.diff("references/EPFL.qoi", "res/EPFL.qoi");
+
+        pngToQoi("references/dice.png", "dice.qoi");
+        Diff.diff("references/dice.qoi", "res/dice.qoi");
+
+        pngToQoi("references/cube.png", "cube.qoi");
+        Diff.diff("references/cube.qoi", "res/cube.qoi");
+
+        pngToQoi("references/beach.png", "beach.qoi");
+        Diff.diff("references/beach.qoi", "res/beach.qoi");
 
 
         System.out.println("All the tests passes. Congratulations");
     }
 
     // ============================================================================================
+
+
+    private static void compareHex(String firstFile, String secondFile){
+        Hexdump.hexdump(Helper.read(firstFile));
+        Hexdump.hexdump(Helper.read(secondFile));
+
+        Diff.diff(firstFile, secondFile);
+    }
 
     /**
      * Encodes a given file from "PNG" to "QOI"

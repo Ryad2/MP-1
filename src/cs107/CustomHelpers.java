@@ -68,7 +68,7 @@ public class CustomHelpers {
     public static boolean luma(byte[] current, byte[] previous, byte[] difference){
         getDiff(current, previous, difference);
 
-        if (difference[1] >= 32 || difference[1] <= -32) return false;
+        if (difference[1] >= 32 || difference[1] <= -33) return false;
         for (int i = 0; i < 3; i += 2){
             if (difference[i] - difference[1] >= 8 || difference[i] - difference[1] <= -9) return false;
         }
