@@ -28,24 +28,6 @@ public class CustomHelpers {
         return result;
     }
 
-    public static byte[] moveColorChannels(byte[] array, boolean moveToRGBA){
-        int index;
-
-        if (moveToRGBA) index = 0;
-        else index = 2;
-
-        byte[] result = new byte[4];
-
-        for (int i = 0; i < 4; i++){
-            index++;
-            if (index == 4) index = 0;
-
-            result[i] = array[index];
-        }
-
-        return result;
-    }
-
 
     // ==================================================================================
     // ============================== Encoder helpers ===================================
@@ -64,7 +46,6 @@ public class CustomHelpers {
             difference[i] = (byte)(current[i] - previous[i]);
         }
     }
-
     public static boolean luma(byte[] current, byte[] previous, byte[] difference){
         getDiff(current, previous, difference);
 
@@ -76,15 +57,12 @@ public class CustomHelpers {
     }
 
 
-    // test functions
-    public static void testChannelOffset() {
+    // ==================================================================================
+    // ============================== Encoder helpers ===================================
+    // ==================================================================================
 
-        byte[] test1 = new byte[] {0, 1, 2, 3};     // ARGB
-        byte[] test2 = new byte[] {1, 2, 3, 0};     // RGBA
 
-        byte[] result1 = moveColorChannels(test1, true);
-        byte[] result2 = moveColorChannels(test2, false);
-
-        return;
+    public static boolean compareTag(byte chunk, byte tag) {
+        return (byte)(chunk & 0b11_00_00_00) == tag;
     }
 }

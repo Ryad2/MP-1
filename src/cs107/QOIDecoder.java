@@ -1,6 +1,7 @@
 package cs107;
 
 import static cs107.Helper.Image;
+import static cs107.CustomHelpers.compareTag;
 
 /**
  * "Quite Ok Image" Decoder
@@ -63,10 +64,10 @@ public final class QOIDecoder {
      * @return (int) - The number of consumed bytes
      * @throws AssertionError See handouts section 6.2.1
      */
-    public static int  decodeQoiOpRGB(byte[][] buffer, byte[] input, byte alpha, int position, int idx) { // idx non comprise ???
-        assert buffer != null && input != null;                                                         // also ask about return
+    public static int decodeQoiOpRGB(byte[][] buffer, byte[] input, byte alpha, int position, int idx) {
+        assert buffer != null && input != null;
         assert position >= 0 && position < buffer.length;
-        assert idx >= 0 && idx < input.length;  // ask about this
+        assert idx >= 0 && idx < input.length;
 
         assert input.length - idx >= 3;
 
@@ -75,8 +76,7 @@ public final class QOIDecoder {
         }
         buffer[position][3] = alpha;
 
-        // why 3? should there be a calculation
-        return 3;//return the number of bytes used in the input
+        return 3;
     }
 
     /**
@@ -90,9 +90,9 @@ public final class QOIDecoder {
      * @throws AssertionError See handouts section 6.2.2
      */
     public static int decodeQoiOpRGBA(byte[][] buffer, byte[] input, int position, int idx) {
-        assert buffer != null && input != null;                                                         // also ask about return
+        assert buffer != null && input != null;
         assert position >= 0 && position < buffer.length;
-        assert idx >= 0 && idx < input.length;  // ask about this
+        assert idx >= 0 && idx < input.length;
 
         assert input.length - idx >= 4;
 
@@ -100,7 +100,7 @@ public final class QOIDecoder {
             buffer[position][i] = input[idx + i];
         }
 
-        return 4;// return the number of consumed bytes
+        return 4;
     }
 
     /**
@@ -114,23 +114,13 @@ public final class QOIDecoder {
     public static byte[] decodeQoiOpDiff(byte[] previousPixel, byte chunk) {
         byte[] result = new byte[4];
 
-
-        // version 2
         byte selector = 0b00_11_00_00;
         for (int i = 0; i < 3; i++) {
-            int offset = 4-i*2;
-            result[i] = (byte)(((selector & chunk)>>offset) + previousPixel[i] - 2);
-            selector = (byte)(selector >> 2);
+            int offset = 4 - i * 2;
+            result[i] = (byte) (((selector & chunk) >> offset) + previousPixel[i] - 2);
+            selector = (byte) (selector >> 2);
         }
         result[3] = previousPixel[3];
-
-
-        // version 1
-
-        /*for (int i = 0; i < 3; i++) {
-            result[i] = (byte) (previousPixel[i] + (((0b00_00_00_11 << 2 * (2 - i) & chunk) >> 2 * (2 - i))) - 2);
-        }
-        result[3] = previousPixel[3];*/
 
         return result;
     }
@@ -151,11 +141,11 @@ public final class QOIDecoder {
         byte[] result = new byte[4];
         byte diff_green = (byte) ((data[0] & 0b00_11_11_11) - 32);
         byte diff_red = (byte) (((data[1] & 0b11_11_00_00) >> 4) + diff_green - 8);
-        byte diff_bleu = (byte) ((data[1] & 0b00_00_11_11) + diff_green - 8);
+        byte diff_blue = (byte) ((data[1] & 0b00_00_11_11) + diff_green - 8);
 
         result[0] = (byte) (previousPixel[0] + diff_red);
-        result[1] = (byte) (previousPixel[1] + diff_green);                   // CAN MAKE IT IN LOOP
-        result[2] = (byte) (previousPixel[2] + diff_bleu);
+        result[1] = (byte) (previousPixel[1] + diff_green);
+        result[2] = (byte) (previousPixel[2] + diff_blue);
         result[3] = previousPixel[3];
 
 
@@ -179,11 +169,11 @@ public final class QOIDecoder {
         assert pixel != null && pixel.length == 4;
         assert buffer.length >= result + position;
 
-        for (int i = position; i <= result+position; i++){
+        for (int i = position; i <= result + position; i++) {
             buffer[i] = pixel;
         }
 
-        return result; //should return the number of new pixels written in the buffer
+        return result;
     }
 
     // ==================================================================================
@@ -210,39 +200,38 @@ public final class QOIDecoder {
         int position = 0;
         int index = 0;
 
-        while (index < data.length)
-        {
+        while (index < data.length) {
             byte chunk = data[index];
 
             // RGB
-            if (chunk == QOISpecification.QOI_OP_RGB_TAG){
+            if (chunk == QOISpecification.QOI_OP_RGB_TAG) {
                 index += decodeQoiOpRGB(buffer, data, previousPixel[3], position, ++index);
             }
 
             // RGBA
-            else if (chunk == QOISpecification.QOI_OP_RGBA_TAG){
+            else if (chunk == QOISpecification.QOI_OP_RGBA_TAG) {
 
                 index += decodeQoiOpRGBA(buffer, data, position, ++index);
             }
 
             // INDEX
-            else if (compareTag(chunk, QOISpecification.QOI_OP_INDEX_TAG)){
+            else if (compareTag(chunk, QOISpecification.QOI_OP_INDEX_TAG)) {
                 decodeIndex(buffer, hashTable, chunk, position);
             }
 
             // DIFF
-            else if (compareTag(chunk, QOISpecification.QOI_OP_DIFF_TAG)){
+            else if (compareTag(chunk, QOISpecification.QOI_OP_DIFF_TAG)) {
                 buffer[position] = decodeQoiOpDiff(previousPixel, chunk);
             }
 
             // LUMA
-            else if (compareTag(chunk, QOISpecification.QOI_OP_LUMA_TAG)){
-                buffer[position] = decodeQoiOpLuma(previousPixel, ArrayUtils.concat(chunk, data[index+1]));
+            else if (compareTag(chunk, QOISpecification.QOI_OP_LUMA_TAG)) {
+                buffer[position] = decodeQoiOpLuma(previousPixel, ArrayUtils.concat(chunk, data[index + 1]));
                 index++;
             }
 
             // RUN
-            else if (compareTag(chunk, QOISpecification.QOI_OP_RUN_TAG)){
+            else if (compareTag(chunk, QOISpecification.QOI_OP_RUN_TAG)) {
                 position += decodeQoiOpRun(buffer, previousPixel, chunk, position);
             }
 
@@ -260,14 +249,7 @@ public final class QOIDecoder {
         return buffer;
     }
 
-    private static boolean compareTag(byte chunk, byte tag)
-    {
-        byte chunkTag = (byte)(chunk & 0b11_00_00_00);      // testing variable
-        return (byte)(chunk & 0b11_00_00_00) == tag;
-    }
-
-    private static void decodeIndex(byte[][] buffer, byte[][] hashTable, byte hash, int position)
-    {
+    private static void decodeIndex(byte[][] buffer, byte[][] hashTable, byte hash, int position) {
         buffer[position] = hashTable[hash];
     }
 
@@ -281,7 +263,7 @@ public final class QOIDecoder {
     public static Image decodeQoiFile(byte[] content) {
         assert content != null;
         assert ArrayUtils.equals(ArrayUtils.extract(content, 0, 4), QOISpecification.QOI_MAGIC);
-        assert ArrayUtils.equals(ArrayUtils.extract(content, content.length-8, 8), QOISpecification.QOI_EOF);
+        assert ArrayUtils.equals(ArrayUtils.extract(content, content.length - 8, 8), QOISpecification.QOI_EOF);
 
         int[] decodedHeader = decodeHeader(ArrayUtils.extract(content, 0, QOISpecification.HEADER_SIZE));
 
@@ -291,9 +273,8 @@ public final class QOIDecoder {
         byte[] data = ArrayUtils.extract(content, QOISpecification.HEADER_SIZE, content.length - QOISpecification.HEADER_SIZE);
         data = ArrayUtils.extract(data, 0, data.length - QOISpecification.QOI_EOF.length);
         byte[][] decodedData = decodeData(data, width, height);
-        //for(byte[] da:decodedData) da=CustomHelpers.RGBAtoARGB(da);
-        int[][]texas=ArrayUtils.channelsToImage(decodedData, height, width);
+        int[][] texas = ArrayUtils.channelsToImage(decodedData, height, width);
 
-        return Helper.generateImage(texas, (byte)decodedHeader[2], (byte)decodedHeader[3]);
+        return Helper.generateImage(texas, (byte) decodedHeader[2], (byte) decodedHeader[3]);
     }
 }

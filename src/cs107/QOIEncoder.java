@@ -106,7 +106,7 @@ public final class QOIEncoder {
      * @throws AssertionError if diff doesn't respect the constraints or diff's length is not 3
      *                        (See the handout for the constraints)
      */
-    public static byte[] qoiOpDiff(byte[] diff) {        // try to make it prettier
+    public static byte[] qoiOpDiff(byte[] diff) {
         assert diff != null;
         assert diff.length == 3;
         for (byte di : diff) assert di <= 1 && di >= -2;
@@ -120,7 +120,7 @@ public final class QOIEncoder {
 
 
         return ArrayUtils.wrap(result);
-    }//MAKE IT BETTER
+    }
 
     /**
      * Encode the difference between 2 pixels using the QOI_OP_LUMA schema
@@ -177,10 +177,6 @@ public final class QOIEncoder {
         byte[][] hashTable = new byte[64][4];
         byte counter = 0;
         ArrayList<byte[]> encodedData = new ArrayList<>();
-
-        // ==================================================================================
-        // =============================== ENCODING V.2 =====================================
-        // ==================================================================================
 
         byte[] difference = new byte[3];
 
@@ -262,7 +258,6 @@ public final class QOIEncoder {
 
         int[][] dalas = image.data();
         byte[] encodedData = encodeData(ArrayUtils.imageToChannels(dalas));
-
 
         return ArrayUtils.concat(qoiHeader(image), encodedData, QOISpecification.QOI_EOF);
     }

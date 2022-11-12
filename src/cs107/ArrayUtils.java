@@ -28,10 +28,10 @@ public final class ArrayUtils {
      * @return (boolean) - true if both arrays have the same content (or both null), false otherwise
      * @throws AssertionError if one of the parameters is null
      */
-    public static boolean equals(byte[] a1, byte[] a2) {//ask assistant if not the same size
+    public static boolean equals(byte[] a1, byte[] a2) {
 
-        assert a1 != null ^ a2 == null : "one of the arrays is null";
-        if (a1.length != a2.length) return false ;
+        assert a1 != null ^ a2 == null;
+        if (a1.length != a2.length) return false;
 
 
         for (int i = 0; i < a1.length; i++) {
@@ -51,7 +51,7 @@ public final class ArrayUtils {
      * @throws AssertionError if one of the parameters is null
      */
     public static boolean equals(byte[][] a1, byte[][] a2) {
-        assert  a1==null ^ a2==null : "one of the parameters is null" ;
+        assert a1 == null ^ a2 == null;
         if (a1.length != a2.length) return false;
 
 
@@ -94,25 +94,15 @@ public final class ArrayUtils {
      * @throws AssertionError if the input is null or the input's length is different from 4
      */
     public static int toInt(byte[] bytes) {
-        assert bytes != null && bytes.length==4 : "the input is null or the input's length is different from 4 ";
+        assert bytes != null && bytes.length == 4;
 
-        int result=0;
-        /*for (int i=0; i<bytes.length; i++) {
-            result = result<<8;
-            result=  result + bytes[i];
-        }*/
+        int result = 0;
 
-
-        result=(bytes[0]&0b11_11_11_11);
-        result=result<<8;
-        result=result+(bytes[1]&0b11_11_11_11);
-        result=result<<8;
-        result=result+(bytes[2]&0b11_11_11_11);
-        result=result<<8;
-        result=result+(bytes[3]&0b11_11_11_11);
-
-
-
+        result = result + (bytes[0] & 0b11_11_11_11);
+        for (int i = 1; i < 4; i++){
+            result = result << 8;
+            result = result + (bytes[i] & 0b11_11_11_11);
+        }
 
         return result;
     }
@@ -125,9 +115,6 @@ public final class ArrayUtils {
      * @return (byte[]) - Big Endian representation of the integer
      */
     public static byte[] fromInt(int value) {
-
-
-
         byte[] result = new byte[4];
 
         for (int i = 3; i >= 0; i--) {
@@ -150,7 +137,7 @@ public final class ArrayUtils {
      * @throws AssertionError if the input is null
      */
     public static byte[] concat(byte... bytes) {
-        assert bytes!= null;
+        assert bytes != null;
 
         byte[] result = new byte[bytes.length];
 
@@ -178,7 +165,7 @@ public final class ArrayUtils {
 
 
         int l = 0;
-        for (byte[] tb : tabs) l += tb.length;
+        for (byte[] tab : tabs) l += tab.length;
         byte[] result = new byte[l];
 
         int x = 0;
@@ -191,7 +178,6 @@ public final class ArrayUtils {
         return result;
 
     }
-    //ESSAYER D UTILISER CONCACT
 
     // ==================================================================================
     // =========================== ARRAY EXTRACTION METHODS =============================
@@ -283,32 +269,11 @@ public final class ArrayUtils {
         byte[][] result = new byte[input.length * input[0].length][];
         int index = 0;
         for (int[] width : input) {
-            for (int height :width) {
+            for (int height : width) {
                 result[index] = CustomHelpers.ARBGtoRGBA(fromInt(height));
                 index++;
             }
         }
-        return result;
-    }
-
-    private static byte[] ARBGtoRGBA(byte[] array) {
-        byte[] result = new byte[array.length];
-
-        for (int i = 0; i < 3; i++){
-            result[i] = array[i+1];
-        }
-        result[3] = array[0];
-
-        return result;
-    }   // try to remove later, also combine.
-    private static byte[] RGBAtoARGB(byte[] array){
-        byte[] result = new byte[array.length];
-
-        for (int i = 1; i < 4; i++){
-            result[i] = array[i-1];
-        }
-        result[0] = array[3];
-
         return result;
     }
 
@@ -328,16 +293,16 @@ public final class ArrayUtils {
      *                        or width is invalid
      */
     public static int[][] channelsToImage(byte[][] input, int height, int width) {
-        assert input!=null;
-        assert input.length==height*width;
-        for (byte[]in:input) assert in!=null && in.length==4;
+        assert input != null;
+        assert input.length == height * width;
+        for (byte[] in : input) assert in != null && in.length == 4;
 
 
         int[][] result = new int[height][width];
 
         for (int i = 0; i < height; i++) {
-            for (int j = 0; j < width; j++){
-                result[i][j] = toInt(CustomHelpers.RGBAtoARGB(input[i * (width)+j]));
+            for (int j = 0; j < width; j++) {
+                result[i][j] = toInt(CustomHelpers.RGBAtoARGB(input[i * (width) + j]));
             }
         }
 
