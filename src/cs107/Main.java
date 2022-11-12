@@ -155,7 +155,11 @@ public final class Main {
 
     // ============================================================================================
 
-
+    /**
+     * comapres two images, and gives their hexdumps
+     * @param firstFile (String) - The path of the first file in .png format
+     * @param secondFile (String) - The path of the second file in .png format
+     */
     private static void compareHex(String firstFile, String secondFile){
         Hexdump.hexdump(Helper.read(firstFile));
         Hexdump.hexdump(Helper.read(secondFile));
